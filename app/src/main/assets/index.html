@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sumikko Chooser</title>
+<style>
+  :root {
+    --bg-cream: #FDFBF7;
+    --bg-warm: #F5EFE6;
+    --brown-dark: #5C4938;
+    --brown-soft: #8C735B;
+    --border-brown: #6E5844;
+    --pink-pastel: #F9D5E5;
+    --pink-accent: #F2A6C2;
+    --mint-pastel: #D4F0E7;
+    --blue-pastel: #D6EAF8;
+    --yellow-pastel: #FCF3CF;
+    --peach-pastel: #FADBD8;
+    --card-shadow: 0 4px 0 #D8CBB8;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-cream);
+    background-image: radial-gradient(#E8DEC8 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--brown-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Corner Wall Framing */
+  .corner-header {
+    background: linear-gradient(180deg, #F3E5D8 0%, var(--bg-cream) 100%);
+    border-bottom: 3px dashed #D8CBB8;
+    padding: 18px 16px 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFF;
+    border: 2.5px solid var(--border-brown);
+    border-radius: 999px;
+    padding: 6px 18px;
+    box-shadow: 0 3px 0 #D8CBB8;
+  }
+
+  .title-badge h1 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--brown-dark);
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--brown-soft);
+    margin: 6px 0 0;
+    font-weight: 500;
+  }
+
+  .container {
+    flex: 1;
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px 16px 100px;
+  }
+
+  /* Input Section */
+  .input-box {
+    background: #FFF;
+    border: 2.5px solid var(--border-brown);
+    border-radius: 20px;
+    padding: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    border: 2px solid #E2D5C4;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--brown-dark);
+    background: #FAF7F2;
+    outline: none;
+    user-select: text;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--pink-accent);
+    background: #FFF;
+  }
+
+  .btn {
+    border: 2.5px solid var(--border-brown);
+    border-radius: 14px;
+    padding: 9px 15px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--brown-dark);
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--border-brown);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--border-brown);
+  }
+
+  .btn-add {
+    background: var(--mint-pastel);
+  }
+
+  .preset-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 2px 4px;
+    scrollbar-width: none;
+  }
+
+  .preset-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    background: #FFF;
+    border: 2px solid #D8CBB8;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--brown-soft);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .chip:active {
+    background: var(--yellow-pastel);
+    border-color: var(--border-brown);
+    color: var(--brown-dark);
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 4px 10px;
+    font-size: 0.82rem;
+    color: var(--brown-soft);
+    font-weight: 600;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--brown-soft);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  /* Choice Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .choice-card {
+    background: #FFF;
+    border: 2.5px solid var(--border-brown);
+    border-radius: 20px;
+    padding: 12px 10px 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, background-color 0.2s;
+    animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .choice-card.spotlight {
+    transform: translateY(-6px) scale(1.05);
+    border-color: #E67E22;
+    background-color: #FFFDF2;
+    box-shadow: 0 8px 0 #F5B041, 0 0 18px rgba(245, 176, 65, 0.55);
+    z-index: 5;
+  }
+
+  .sfx-bubble {
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    background: var(--yellow-pastel);
+    border: 2px solid var(--border-brown);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--brown-dark);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.15s ease;
+    pointer-events: none;
+  }
+
+  .choice-card.spotlight .sfx-bubble {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-brown);
+    background: #FFF;
+    color: var(--brown-dark);
+    font-size: 0.85rem;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .char-avatar {
+    width: 72px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .char-avatar svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .char-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-bottom: 5px;
+    border: 1.5px solid var(--border-brown);
+  }
+
+  .choice-text {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    word-break: break-word;
+    line-height: 1.25;
+    padding: 0 4px;
+  }
+
+  .empty-corner {
+    grid-column: 1 / -1;
+    background: #FFF9F2;
+    border: 2.5px dashed #D8CBB8;
+    border-radius: 22px;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--brown-soft);
+  }
+
+  /* Bottom Sticky Pick Bar */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg, var(--bg-cream) 75%, rgba(253,251,247,0));
+    padding: 12px 16px 20px;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .btn-pick {
+    max-width: 480px;
+    width: 100%;
+    background: var(--pink-pastel);
+    border: 3px solid var(--border-brown);
+    border-radius: 999px;
+    padding: 14px 24px;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--brown-dark);
+    box-shadow: 0 5px 0 var(--border-brown);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-pick:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Reveal Modal & Furoshiki Animation */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(65, 50, 38, 0.65);
+    backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+  }
+
+  .overlay.active {
+    display: flex;
+  }
+
+  .stage-box {
+    background: var(--bg-cream);
+    border: 3.5px solid var(--border-brown);
+    border-radius: 28px;
+    max-width: 360px;
+    width: 100%;
+    padding: 24px 20px 22px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 8px 0 var(--border-brown);
+    overflow: hidden;
+  }
+
+  /* Furoshiki Wobble Stage */
+  .furoshiki-wrap {
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wobble-anim {
+    animation: wobbleBundle 0.45s infinite ease-in-out;
+  }
+
+  @keyframes wobbleBundle {
+    0%, 100% { transform: rotate(-7deg) scale(1); }
+    50% { transform: rotate(7deg) scale(1.06); }
+  }
+
+  /* Winner Stage */
+  .winner-stage {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    animation: winnerBurst 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes winnerBurst {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .winner-ribbon {
+    background: var(--yellow-pastel);
+    border: 2px solid var(--border-brown);
+    border-radius: 99px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .winner-avatar {
+    width: 118px;
+    height: 110px;
+    margin: 4px 0 8px;
+    animation: happyBounce 1.2s infinite ease-in-out;
+  }
+
+  @keyframes happyBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  .winner-choice {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--brown-dark);
+    margin: 6px 0 4px;
+    word-break: break-word;
+  }
+
+  .winner-sub {
+    font-size: 0.82rem;
+    color: var(--brown-soft);
+    margin-bottom: 18px;
+  }
+
+  .modal-btns {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .modal-btns .btn {
+    flex: 1;
+    padding: 11px;
+  }
+
+  /* Tapioca Confetti */
+  .tapioca-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.8px solid var(--border-brown);
+    pointer-events: none;
+    animation: confettiFall 1.1s ease-out forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(260deg) scale(0.7); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="corner-header">
+  <div class="title-badge">
+    <span>🐾</span>
+    <h1>Sumikko Chooser</h1>
+    <span>🍵</span>
+  </div>
+  <p class="subtitle">Cozy in the corner • Tap to pick your fate!</p>
+</header>
+
+<main class="container">
+  <section class="input-box">
+    <div class="input-row">
+      <input type="text" id="choiceInput" placeholder="Add a choice (or comma-separated list)..." autocomplete="off">
+      <button class="btn btn-add" id="addBtn">Add</button>
+    </div>
+    <div class="preset-bar">
+      <button class="chip" onclick="loadPreset('tea')">🧋 Tea Run</button>
+      <button class="chip" onclick="loadPreset('dinner')">🍲 Dinner Spot</button>
+      <button class="chip" onclick="loadPreset('craft')">🧶 Craft Project</button>
+      <button class="chip" onclick="loadPreset('weekend')">🌿 Cozy Weekend</button>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <span id="countLabel">0 friends in the corner</span>
+    <div class="toolbar-actions">
+      <button class="link-btn" onclick="shuffleCharacters()">Shuffle Friends</button>
+      <button class="link-btn" onclick="clearAll()">Clear All</button>
+    </div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid"></div>
+</main>
+
+<div class="bottom-bar">
+  <button class="btn-pick" id="pickBtn" onclick="startCornerPick()">
+    <span>✨</span> Pick from the Corner! <span>✨</span>
+  </button>
+</div>
+
+<!-- Reveal Modal -->
+<div class="overlay" id="revealOverlay">
+  <div class="stage-box" id="stageBox">
+    <div class="furoshiki-wrap" id="furoshikiStage">
+      <div class="wobble-anim" style="width:115px;height:110px;">
+        <svg viewBox="0 0 100 95">
+          <!-- Furoshiki Bundle -->
+          <path d="M22 25 C15 12, 35 10, 48 26 C62 10, 82 12, 75 25 C86 35, 88 78, 50 82 C12 78, 14 35, 22 25 Z" fill="#F9CBD6" stroke="#5C4938" stroke-width="3.5" stroke-linejoin="round"/>
+          <circle cx="34" cy="48" r="5" fill="#FFF2BA"/>
+          <circle cx="66" cy="45" r="5" fill="#FFF2BA"/>
+          <circle cx="52" cy="68" r="5" fill="#FFF2BA"/>
+          <circle cx="32" cy="67" r="4" fill="#FFF2BA"/>
+          <circle cx="67" cy="65" r="4" fill="#FFF2BA"/>
+          <ellipse cx="50" cy="27" rx="11" ry="6" fill="#F4AFC0" stroke="#5C4938" stroke-width="3"/>
+          <circle cx="43" cy="54" r="2.6" fill="#5C4938"/>
+          <circle cx="57" cy="54" r="2.6" fill="#5C4938"/>
+          <path d="M48 58 Q50 60 52 58" stroke="#5C4938" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p style="font-weight:800;margin:10px 0 2px;font-size:1rem;">Rustling in the Furoshiki...</p>
+      <p style="font-size:0.8rem;color:var(--brown-soft);margin:0;">Goso Goso... Who is hiding inside?</p>
+    </div>
+
+    <div class="winner-stage" id="winnerStage">
+      <div class="winner-ribbon" id="winnerCharName">Shirokuma picked for you!</div>
+      <div class="winner-avatar" id="winnerSvgBox"></div>
+      <div class="winner-choice" id="winnerText">Choice Name</div>
+      <div class="winner-sub" id="winnerComment">Warm and cozy in the corner!</div>
+      <div class="modal-btns">
+        <button class="btn" style="background:#FFF;" onclick="closeModal()">Keep All</button>
+        <button class="btn" style="background:var(--pink-pastel);" onclick="pickAgain()">Pick Again 🎲</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUMIKKO_CREW = [
+  {
+    id: 'shirokuma',
+    name: 'Shirokuma',
+    bg: '#FCE8EE',
+    sfx: 'Brrr... Cozy!',
+    quote: 'Wrapped up warm in the corner with hot tea!',
+    svg: `<svg viewBox="0 0 100 92">
+      <circle cx="26" cy="24" r="10" fill="#FFFFFF" stroke="#5C4938" stroke-width="3.2"/>
+      <circle cx="26" cy="24" r="5" fill="#F9CBD6"/>
+      <circle cx="74" cy="24" r="10" fill="#FFFFFF" stroke="#5C4938" stroke-width="3.2"/>
+      <circle cx="74" cy="24" r="5" fill="#F9CBD6"/>
+      <path d="M20 78 C16 42, 24 20, 50 20 C76 20, 84 42, 80 78 Z" fill="#FFFFFF" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M22 60 Q50 72 78 60 L79 78 L21 78 Z" fill="#F9CBD6" stroke="#5C4938" stroke-width="3"/>
+      <circle cx="35" cy="70" r="3.5" fill="#FFF5BA"/>
+      <circle cx="52" cy="72" r="3.5" fill="#FFF5BA"/>
+      <circle cx="67" cy="69" r="3.5" fill="#FFF5BA"/>
+      <circle cx="39" cy="43" r="3" fill="#5C4938"/>
+      <circle cx="61" cy="43" r="3" fill="#5C4938"/>
+      <ellipse cx="50" cy="47" rx="5.5" ry="4" fill="#5C4938"/>
+      <ellipse cx="31" cy="47" rx="4.5" ry="2.5" fill="#F7B2C4" opacity="0.7"/>
+      <ellipse cx="69" cy="47" rx="4.5" ry="2.5" fill="#F7B2C4" opacity="0.7"/>
+    </svg>`
+  },
+  {
+    id: 'penguin',
+    name: 'Penguin?',
+    bg: '#E8F6D5',
+    sfx: 'Kyoro Kyoro?',
+    quote: 'Am I really a penguin? At least this choice is certain!',
+    svg: `<svg viewBox="0 0 100 92">
+      <path d="M21 78 C17 40, 26 20, 50 20 C74 20, 83 40, 79 78 Z" fill="#C5E07A" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="62" rx="20" ry="15" fill="#FDFBF5"/>
+      <circle cx="39" cy="41" r="3" fill="#5C4938"/>
+      <circle cx="61" cy="41" r="3" fill="#5C4938"/>
+      <ellipse cx="50" cy="45" rx="7.5" ry="4.5" fill="#F7D056" stroke="#5C4938" stroke-width="2.8"/>
+      <rect x="62" y="54" width="16" height="7" rx="3.5" transform="rotate(-20 62 54)" fill="#589E47" stroke="#5C4938" stroke-width="2.5"/>
+    </svg>`
+  },
+  {
+    id: 'tonkatsu',
+    name: 'Tonkatsu & Ebi',
+    bg: '#F9E6CF',
+    sfx: 'Saku Saku!',
+    quote: '1% meat, 99% crispy happiness! You got picked!',
+    svg: `<svg viewBox="0 0 100 92">
+      <path d="M22 78 C16 44, 24 22, 48 22 C72 22, 79 44, 74 78 Z" fill="#D99B56" stroke="#5C4938" stroke-width="3.2" stroke-dasharray="6,2" stroke-linejoin="round"/>
+      <circle cx="37" cy="44" r="2.8" fill="#5C4938"/>
+      <circle cx="57" cy="44" r="2.8" fill="#5C4938"/>
+      <ellipse cx="47" cy="48" rx="5" ry="3.5" fill="#F4A7B9" stroke="#5C4938" stroke-width="2.3"/>
+      <path d="M35 30 Q47 35 60 29" stroke="#9E472A" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- Ebi Fry mini buddy -->
+      <path d="M77 45 L84 34 L90 45 Z" fill="#E85D56" stroke="#5C4938" stroke-width="2.3" stroke-linejoin="round"/>
+      <ellipse cx="83" cy="60" rx="10" ry="14" fill="#F2C166" stroke="#5C4938" stroke-width="2.6"/>
+      <circle cx="80" cy="58" r="1.8" fill="#5C4938"/>
+      <circle cx="86" cy="58" r="1.8" fill="#5C4938"/>
+    </svg>`
+  },
+  {
+    id: 'neko',
+    name: 'Neko & Zassou',
+    bg: '#FCF1D2',
+    sfx: 'Mew... Shy!',
+    quote: 'Timidly peeking from the wall to cheer for your choice!',
+    svg: `<svg viewBox="0 0 100 92">
+      <polygon points="24,34 26,16 40,24" fill="#F9E7B2" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <polygon points="74,34 72,16 58,24" fill="#E39D54" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M21 78 C16 42, 24 22, 49 22 C74 22, 81 42, 76 78 Z" fill="#F9E7B2" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M56 23 C68 25, 76 36, 75 49 C64 49, 57 38, 56 23 Z" fill="#E39D54"/>
+      <path d="M21 56 C32 55, 36 66, 22 72 Z" fill="#9E7B66"/>
+      <circle cx="38" cy="43" r="2.8" fill="#5C4938"/>
+      <circle cx="58" cy="43" r="2.8" fill="#5C4938"/>
+      <path d="M45 48 Q48 50 51 48" stroke="#5C4938" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <line x1="15" y1="45" x2="25" y2="46" stroke="#5C4938" stroke-width="2.3" stroke-linecap="round"/>
+      <line x1="15" y1="51" x2="25" y2="50" stroke="#5C4938" stroke-width="2.3" stroke-linecap="round"/>
+      <line x1="72" y1="46" x2="82" y2="45" stroke="#5C4938" stroke-width="2.3" stroke-linecap="round"/>
+      <line x1="72" y1="50" x2="82" y2="51" stroke="#5C4938" stroke-width="2.3" stroke-linecap="round"/>
+    </svg>`
+  },
+  {
+    id: 'tokage',
+    name: 'Tokage & Snail',
+    bg: '#DDF1FA',
+    sfx: 'Poko Poko~',
+    quote: 'Just a totally normal lizard! Happy with this pick!',
+    svg: `<svg viewBox="0 0 100 92">
+      <path d="M21 78 C17 40, 26 20, 50 20 C74 20, 82 40, 78 78 Z" fill="#9ED8EB" stroke="#5C4938" stroke-width="3.2" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="63" rx="19" ry="14" fill="#FDFBF5"/>
+      <circle cx="39" cy="42" r="3" fill="#5C4938"/>
+      <circle cx="61" cy="42" r="3" fill="#5C4938"/>
+      <path d="M46 47 Q50 50 54 47" stroke="#5C4938" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <!-- Nisetsumuri on head -->
+      <circle cx="52" cy="14" r="7" fill="#F7B7C8" stroke="#5C4938" stroke-width="2.3"/>
+      <path d="M50 14 A3 3 0 1 1 54 16" stroke="#5C4938" stroke-width="1.8" fill="none"/>
+    </svg>`
+  },
+  {
+    id: 'tapioca',
+    name: 'Tapioca Trio',
+    bg: '#F5E1FD',
+    sfx: 'Puni Puni!',
+    quote: 'Leftover boba pearls cheering at the bottom of the cup!',
+    svg: `<svg viewBox="0 0 100 92">
+      <!-- Yama mountain background -->
+      <path d="M22 76 L42 36 L58 36 L78 76 Z" fill="#A8D5EE" stroke="#5C4938" stroke-width="2.8" stroke-linejoin="round"/>
+      <path d="M35 50 L42 36 L58 36 L65 50 Q58 54 50 50 Q42 54 35 50 Z" fill="#FFFFFF" stroke="#5C4938" stroke-width="2.5"/>
+      <!-- Pink Tapioca -->
+      <circle cx="32" cy="65" r="14" fill="#F9CBD6" stroke="#5C4938" stroke-width="2.8"/>
+      <circle cx="28" cy="64" r="2" fill="#5C4938"/>
+      <circle cx="36" cy="64" r="2" fill="#5C4938"/>
+      <!-- Yellow Tapioca -->
+      <circle cx="68" cy="65" r="14" fill="#FFF0A8" stroke="#5C4938" stroke-width="2.8"/>
+      <circle cx="64" cy="64" r="2" fill="#5C4938"/>
+      <circle cx="72" cy="64" r="2" fill="#5C4938"/>
+      <!-- Blue Tapioca -->
+      <circle cx="50" cy="54" r="14" fill="#BCE6F7" stroke="#5C4938" stroke-width="2.8"/>
+      <circle cx="46" cy="53" r="2" fill="#5C4938"/>
+      <circle cx="54" cy="53" r="2" fill="#5C4938"/>
+    </svg>`
+  }
+];
+
+const PRESETS = {
+  tea: ['Oolong Milk Tea (30% Sugar)', 'Jasmine Green Tea w/ Boba', 'Taro Fresh Milk', 'Osmanthus Oolong Less Ice', 'Grapefruit Green Tea'],
+  dinner: ['Spicy Soondubu Jjigae', 'Al Pastor Tacos', 'Saffron Mediterranean Bowl', 'KBBQ Pork Belly Night', 'Cozy Home Meal Kit'],
+  craft: ['Crochet Amigurumi Plush', 'Chunky Knit Beanie', 'Sumikko Cross-Stitch Grid', 'Triangle Tote Bag', 'Cozy Yarn Cardigan'],
+  weekend: ['Coastal Trail Hike', 'Claw Machine Arcade Run', 'Bake Allulose Mochi', 'Prune the Lemon Tree', 'Board Game Night']
+};
+
+let choices = [];
+let isPicking = false;
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) audioCtx = new AudioContext();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playTone(freq, duration = 0.08, type = 'sine') {
+  try {
+    initAudio();
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+
+function saveChoices() {
+  try {
+    localStorage.setItem('sumikko_choices_v1', JSON.stringify(choices));
+  } catch (e) {}
+}
+
+function loadSavedChoices() {
+  try {
+    const raw = localStorage.getItem('sumikko_choices_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        choices = parsed;
+        renderCards();
+        return;
+      }
+    }
+  } catch (e) {}
+  loadPreset('tea');
+}
+
+function addItemsFromString(rawStr) {
+  const parts = rawStr.split(/[,\n]+/).map(s => s.trim()).filter(Boolean);
+  if (!parts.length) return;
+  parts.forEach((text, i) => {
+    const charIndex = (choices.length + i) % SUMIKKO_CREW.length;
+    choices.push({
+      id: Date.now() + Math.random(),
+      text,
+      charIndex
+    });
+  });
+  playTone(587.33, 0.09);
+  saveChoices();
+  renderCards();
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  const inp = document.getElementById('choiceInput');
+  addItemsFromString(inp.value);
+  inp.value = '';
+});
+
+document.getElementById('choiceInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    addItemsFromString(e.target.value);
+    e.target.value = '';
+  }
+});
+
+function loadPreset(key) {
+  const items = PRESETS[key] || [];
+  choices = items.map((text, idx) => ({
+    id: Date.now() + idx + Math.random(),
+    text,
+    charIndex: idx % SUMIKKO_CREW.length
+  }));
+  playTone(523.25, 0.09);
+  saveChoices();
+  renderCards();
+}
+
+function removeChoice(id) {
+  if (isPicking) return;
+  choices = choices.filter(c => c.id !== id);
+  playTone(392.00, 0.07);
+  saveChoices();
+  renderCards();
+}
+
+function clearAll() {
+  if (isPicking) return;
+  choices = [];
+  saveChoices();
+  renderCards();
+}
+
+function shuffleCharacters() {
+  if (isPicking || !choices.length) return;
+  choices.forEach(c => {
+    c.charIndex = Math.floor(Math.random() * SUMIKKO_CREW.length);
+  });
+  playTone(659.25, 0.09);
+  saveChoices();
+  renderCards();
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  const countLabel = document.getElementById('countLabel');
+  const pickBtn = document.getElementById('pickBtn');
+
+  countLabel.textContent = `${choices.length} ${choices.length === 1 ? 'friend' : 'friends'} in the corner`;
+  pickBtn.disabled = choices.length < 2 || isPicking;
+
+  if (choices.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-corner">
+        <div style="font-size:2rem;margin-bottom:6px;">🐾</div>
+        <div style="font-weight:800;margin-bottom:4px;">The corner is empty!</div>
+        <div style="font-size:0.82rem;">Add at least 2 choices above or tap a preset chip to invite the Sumikko friends.</div>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = choices.map((item, idx) => {
+    const char = SUMIKKO_CREW[item.charIndex % SUMIKKO_CREW.length];
+    return `
+      <div class="choice-card" id="card-${idx}">
+        <div class="sfx-bubble">${char.sfx}</div>
+        <button class="remove-btn" onclick="removeChoice(${item.id})" aria-label="Remove">×</button>
+        <div class="char-avatar">${char.svg}</div>
+        <span class="char-tag" style="background:${char.bg};">${char.name}</span>
+        <div class="choice-text">${escapeHtml(item.text)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function spawnTapiocaConfetti() {
+  const stageBox = document.getElementById('stageBox');
+  const colors = ['#F9CBD6', '#BCE6F7', '#FFF0A8', '#D4F0E7', '#FADBD8'];
+  for (let i = 0; i < 22; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'tapioca-dot';
+    dot.style.background = colors[i % colors.length];
+    dot.style.left = '50%';
+    dot.style.top = '45%';
+    const angle = (Math.PI * 2 * i) / 22 + (Math.random() * 0.3);
+    const dist = 70 + Math.random() * 90;
+    dot.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+    dot.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
+    stageBox.appendChild(dot);
+    setTimeout(() => dot.remove(), 1150);
+  }
+}
+
+async function startCornerPick() {
+  if (isPicking || choices.length < 2) return;
+  isPicking = true;
+  document.getElementById('pickBtn').disabled = true;
+
+  const cards = choices.map((_, i) => document.getElementById(`card-${i}`));
+  const winnerIdx = Math.floor(Math.random() * choices.length);
+  const totalHops = 14 + Math.floor(Math.random() * 6);
+
+  // Stage 1: Corner-hopping spotlight across cards
+  for (let step = 0; step <= totalHops; step++) {
+    cards.forEach(c => c && c.classList.remove('spotlight'));
+    const currentIdx = step === totalHops ? winnerIdx : (step % choices.length);
+    const activeCard = cards[currentIdx];
+    if (activeCard) {
+      activeCard.classList.add('spotlight');
+      activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    playTone(440 + (step * 18), 0.06, 'triangle');
+    const delay = 75 + Math.pow(step / totalHops, 2) * 190;
+    await new Promise(r => setTimeout(r, delay));
+  }
+
+  // Stage 2: Gather in the wobbling Furoshiki bundle
+  const overlay = document.getElementById('revealOverlay');
+  const furoshikiStage = document.getElementById('furoshikiStage');
+  const winnerStage = document.getElementById('winnerStage');
+
+  furoshikiStage.style.display = 'flex';
+  winnerStage.style.display = 'none';
+  overlay.classList.add('active');
+
+  for (let w = 0; w < 4; w++) {
+    playTone(330 + (w * 40), 0.08, 'sine');
+    await new Promise(r => setTimeout(r, 240));
+  }
+
+  // Stage 3: Burst open with Winner & Tapioca confetti!
+  const winnerItem = choices[winnerIdx];
+  const winnerChar = SUMIKKO_CREW[winnerItem.charIndex % SUMIKKO_CREW.length];
+
+  document.getElementById('winnerCharName').textContent = `${winnerChar.name} picked for you!`;
+  document.getElementById('winnerCharName').style.background = winnerChar.bg;
+  document.getElementById('winnerSvgBox').innerHTML = winnerChar.svg;
+  document.getElementById('winnerText').textContent = winnerItem.text;
+  document.getElementById('winnerComment').textContent = winnerChar.quote;
+
+  furoshikiStage.style.display = 'none';
+  winnerStage.style.display = 'flex';
+  spawnTapiocaConfetti();
+
+  // Happy celebratory chord
+  playTone(523.25, 0.12);
+  setTimeout(() => playTone(659.25, 0.12), 100);
+  setTimeout(() => playTone(783.99, 0.22), 200);
+
+  isPicking = false;
+  document.getElementById('pickBtn').disabled = choices.length < 2;
+}
+
+function closeModal() {
+  document.getElementById('revealOverlay').classList.remove('active');
+  document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('spotlight'));
+}
+
+function pickAgain() {
+  closeModal();
+  setTimeout(() => startCornerPick(), 180);
+}
+
+loadSavedChoices();
+</script>
+</body>
+</html>
