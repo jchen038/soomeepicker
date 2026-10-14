@@ -13,7 +13,7 @@ window.SUMIKKO_PRESETS_CONFIG = {
       "title": "Milk Tea Emergency",
       "icon": "boba",
       "color": "#EADBF9",
-      "items": [
+      "options": [
         "TP Tea",
         "Sunright",
         "Sunmerry",
@@ -26,7 +26,7 @@ window.SUMIKKO_PRESETS_CONFIG = {
       "title": "What's for Dinner?",
       "icon": "hotpot",
       "color": "#D3EFF8",
-      "items": [
+      "options": [
         "Chinese",
         "Mexican",
         "Japanese",
@@ -39,7 +39,7 @@ window.SUMIKKO_PRESETS_CONFIG = {
       "title": "Cozy Weekend",
       "icon": "sprout",
       "color": "#E3F2C9",
-      "items": [
+      "options": [
         "Hike / Walk",
         "Shelter",
         "Round 1",
@@ -52,7 +52,7 @@ window.SUMIKKO_PRESETS_CONFIG = {
       "title": "Who wins?",
       "icon": "sweet",
       "color": "#FADBD8",
-      "items": [
+      "options": [
         "Jimmy",
         "Mathida"
       ]
