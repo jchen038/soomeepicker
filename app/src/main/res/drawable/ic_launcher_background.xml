@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Warm Cream Base -->
+    <path
+        android:fillColor="#FDFBF7"
+        android:pathData="M0,0h108v108h-108z" />
+    <!-- Cozy Corner Wall Diagonal Accent -->
+    <path
+        android:fillColor="#F3E5D8"
+        android:pathData="M0,0 L108,0 L108,42 Q54,52 0,42 Z" />
+    <!-- Soft Pastel Polka Dots in Background -->
+    <path
+        android:fillColor="#F9D5E5"
+        android:pathData="M24,24 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+    <path
+        android:fillColor="#D4F0E7"
+        android:pathData="M84,26 m-4.5,0 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0" />
+    <path
+        android:fillColor="#FCF3CF"
+        android:pathData="M54,19 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+</vector>
